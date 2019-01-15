@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Giphy Generator</title>
+  <style type="text/css">
+    button,
+    div,
+    form,
+    input {
+      margin: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>Birds GIF!</h1>
+
+    <!-- Rendered buttons submitted  -->
+    <div id="buttons">
+      <button data-bird="pigeons">pigeons</button>
+      <button data-bird="doves">doves</button>
+    </div>
+    
+    <form id="bird-form">
+      <label for="bird-input">Add a bird!</label>
+      <input type="text" id="bird-input"><br>
+
+      <!-- Button triggers new birds to be added -->
+      <input id="add-bird" type="submit" value="Submit">
+    </form>
+
+    <!-- bird GIFs will get dumped here -->
+    <div id="bird-gifs"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript">
+    // Initial array of birds
+    var birds = ["Blue Jay", "Eagles", "Osprey", "Owls"];
+
+    // displayMovieInfo function re-renders the HTML to display the appropriate content
+    $("#buttons").on("click", "button", function() {
+      var apiKey = "dc6zaTOxFJmzC&limit=10";
+      var bird = $(this).attr("data-bird");
+      var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + bird + "&api_key=" + apiKey;
+
+      $.ajax({
+        url: queryURL,
+        method: "GET"
+      })
+        .then(function(response) {
+          console.log(response);
+          var results = response.data;
+
+          for (var i = 0; i < results.length; i++) {
+            var gifDiv = $("<div>");
+
+            var rating = results[i].rating;
+
+            var p = $("<p>").text("Rating: " + rating);
+
+            var personImage = $("<img>");
+            personImage.attr("src", results[i].images.fixed_height.url);
+
+            gifDiv.prepend(p);
+            gifDiv.prepend(personImage);
+
+            $("#bird-gifs").prepend(gifDiv);
+          }
+        });
+    });
+    // Function for displaying movie data
+    function renderButtons() {
+
+        // Deletes the movies prior to adding new movies
+        // (this is necessary otherwise you will have repeat buttons)
+        $("#buttons").empty();
+        // Loops through the array of movies
+        for (var i = 0; i < birds.length; i++) {
+
+          // Then dynamicaly generates buttons for each movie in the array
+          // This code $("<button>") is all jQuery needs to create the beginning and end tag. (<button></button>)
+          var a = $("<button>");
+          // Adds a class of movie to our button
+          a.addClass("bird");
+          // Added a data-attribute
+          a.attr("data-bird", birds[i]);
+          // Provided the initial button text
+          a.text(birds[i]);
+          // Added the button to the buttons-view div
+          $("#buttons").append(a);
+        }
+      }
+
+      // This function handles events where the add movie button is clicked
+      $("#add-bird").on("click", function(event) {
+        event.preventDefault();
+        // This line of code will grab the input from the textbox
+        var bird = $("#bird-input").val().trim();
+
+        // The movie from the textbox is then added to our array
+        birds.push(bird);
+
+        // Calling renderButtons which handles the processing of our movie array
+        renderButtons();
+      });
+
+      // Adding click event listeners to all elements with a class of "movie"
+      $(document).on("click", ".bird", displayMovieInfo);
+
+      // Calling the renderButtons function to display the intial buttons
+      renderButtons();
+
+
+    </script>
+  </div>
+</body>
+
+</html>
