@@ -41,11 +41,13 @@
     // Initial array of birds
     var birds = ["Blue Jay", "Eagles", "Osprey", "Owls"];
 
-    // displayMovieInfo function re-renders the HTML to display the appropriate content
+    // Calls giphy API on button click to grab gif data
     $("#buttons").on("click", "button", function() {
       var apiKey = "dc6zaTOxFJmzC&limit=10";
       var bird = $(this).attr("data-bird");
       var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + bird + "&api_key=" + apiKey;
+      var state = $(this).attr("data-state");
+      console.log("Current gif state: " + state);
 
       $.ajax({
         url: queryURL,
@@ -74,48 +76,40 @@
     });
 
     
-    // Function for displaying movie data
+    // Displays buttons for gifs
     function renderButtons() {
-
-        // Deletes the movies prior to adding new movies
-        // (this is necessary otherwise you will have repeat buttons)
+        // Deletes existing buttons
         $("#buttons").empty();
-        // Loops through the array of movies
-        for (var i = 0; i < birds.length; i++) {
 
-          // Then dynamicaly generates buttons for each movie in the array
-          // This code $("<button>") is all jQuery needs to create the beginning and end tag. (<button></button>)
-          var a = $("<button>");
-          // Adds a class of movie to our button
-          a.addClass("bird");
-          // Added a data-attribute
-          a.attr("data-bird", birds[i]);
-          // Provided the initial button text
-          a.text(birds[i]);
-          // Added the button to the buttons-view div
-          $("#buttons").append(a);
+        // Loops through the array of birds
+        for (var i = 0; i < birds.length; i++) {
+          // Dynamicaly generates buttons for each bird in the array
+          var newButton = $("<button>");
+          // Adds a class of bird to button
+          newButton.addClass("bird");
+          // Adds a data-attribute to index of birds array
+          newButton.attr("data-bird", birds[i]);
+          // Provides initial button text for the current index in birds array
+          newButton.text(birds[i]);
+          // Adds the button to the buttons div
+          $("#buttons").append(newButton);
         }
       }
 
-      // This function handles events where the add movie button is clicked
+      // Function to handle events when the submit button is clicked
       $("#add-bird").on("click", function(event) {
+        // Prevents page refresh
         event.preventDefault();
-        // This line of code will grab the input from the textbox
+        // Grabs input from textbox
         var bird = $("#bird-input").val().trim();
-
-        // The movie from the textbox is then added to our array
+        // Pushes input from textbox to birds array
         birds.push(bird);
-
-        // Calling renderButtons which handles the processing of our movie array
+        // Calls renderButtons function to display button on page
         renderButtons();
       });
 
-      // Adding click event listeners to all elements with a class of "movie"
-      //$(document).on("click", ".bird", displayMovieInfo);
-
-      // Calling the renderButtons function to display the intial buttons
+      // Calls renderButtons function to display intial buttons
       renderButtons();
-
 
     </script>
   </div>
